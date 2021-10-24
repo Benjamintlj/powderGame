@@ -1,0 +1,129 @@
+
+class Window
+{
+    
+private:
+    // window dimentions
+    int HEIGHT;
+    int WIDTH;
+    
+    // pointers
+    SDL_Window *window;
+    SDL_Texture *currentFrame;
+    SDL_Renderer *renderTarget;
+    
+
+    
+    
+public:
+    // constructor
+    Window(int height, int width);
+    
+    // destructor - is called at the end of program
+    ~Window();
+    
+    // creates the window
+    void load();
+    
+    // renders window
+    void render();
+    
+    // adds texture to be rendered
+    void addToFrame(std::string fileBMP);
+    
+    // adds texture to be rendered
+    void background();
+};
+
+
+
+
+
+/// constuctor
+Window::Window(int height, int width)
+{
+    // diamentions
+    HEIGHT = height;
+    WIDTH = width;
+    
+    // pointers
+    window = nullptr;
+    currentFrame = nullptr;
+    renderTarget = nullptr;
+}
+
+
+/// destructor
+Window::~Window()
+{
+    SDL_DestroyWindow(window);
+    SDL_DestroyTexture(currentFrame);
+    SDL_DestroyRenderer(renderTarget);
+    window = nullptr;
+    currentFrame = nullptr;
+    renderTarget = nullptr;
+    
+    
+    SDL_Quit();
+}
+
+
+/// loads the window
+void Window::load()
+{
+    cout << "beginning the window creation proccess protocol2.0" << endl;
+    
+    SDL_Init(SDL_INIT_VIDEO);
+    
+    window = SDL_CreateWindow("powderGame", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
+    if (window == NULL) {
+        cout << "SDL ERROR: window failed to be created" << endl;
+        return;
+    }
+    
+    renderTarget = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);SDL_Init(SDL_INIT_VIDEO);
+    if (renderTarget == NULL) {
+        cout << "SDL ERROR: render target failed to be created" << endl;
+        return;
+    }
+}
+
+
+/// renders the next frame
+void Window::render()
+{
+    SDL_RenderClear(renderTarget);
+    SDL_RenderCopy(renderTarget, currentFrame, NULL, NULL);
+    SDL_RenderPresent(renderTarget);
+}
+
+
+/// renders a BMP file to the frame as a texture ready for the next frame
+void Window::addToFrame(std::string fileBMP)
+{
+    SDL_Texture *texture = nullptr;
+    SDL_Surface *surface = SDL_LoadBMP(fileBMP.c_str());
+    
+    if(surface == NULL) cout << "SDL ERROR: surface " << fileBMP << " was not found" << endl;
+    else
+    {
+        texture = SDL_CreateTextureFromSurface(renderTarget, surface);
+        if(texture == NULL) cout << "SDL ERROR: texture not made" << endl;
+    }
+    
+    SDL_FreeSurface(surface);
+    
+    cout << "asdf" << endl;
+    
+    currentFrame = texture;
+}
+
+
+/*
+/// renders a BMP file to the frame as a texture ready for the next frame
+void Window::background()
+{
+    cout << "sadf" << endl;
+}
+
+*/
